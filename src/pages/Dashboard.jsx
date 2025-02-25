@@ -67,9 +67,9 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="p-4 md:p-6"> {/* Add responsive padding */}
+    <div className="p-4 md:p-6"> 
       <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2 md:mb-0">Employee Dashboard</h1> {/* Responsive font size */}
+        <h1 className="text-2xl md:text-3xl font-bold mb-2 md:mb-0">Employee Dashboard</h1> 
         <div>
           <button onClick={addEmployee} className="bg-green-500 text-white px-3 py-2 md:px-4 md:py-2 rounded mr-2">Add Employee</button>
           <button onClick={handleLogout} className="bg-red-500 text-white px-3 py-2 md:px-4 md:py-2 rounded">Logout</button>
@@ -82,11 +82,11 @@ const Dashboard = () => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <div className="overflow-x-auto"> {/* Horizontal scroll for small screens */}
+      <div className="overflow-x-auto">
         <table className="w-full min-w-max border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border p-2 text-sm md:text-base">Name</th> {/* Responsive font size */}
+              <th className="border p-2 text-sm md:text-base">Name</th> 
               <th className="border p-2 text-sm md:text-base">ID</th>
               <th className="border p-2 text-sm md:text-base">Position</th>
               <th className="border p-2 text-sm md:text-base">Department</th>
@@ -105,7 +105,7 @@ const Dashboard = () => {
                   <td className="border p-2 text-sm md:text-base">{emp.department}</td>
                   <td className="border p-2 text-sm md:text-base">${emp.salary}</td>
                   <td className="border p-2">
-                    <img
+                    <img 
                       src={`${SERVER_URL}/uploads/${emp.empImg}`}
                       alt={emp.name}
                       className="h-10 w-10 md:h-12 md:w-12 rounded-full mx-auto"

@@ -39,7 +39,7 @@ console.log(isAuthorised);
 
       <Route path='/' element={<Auth/>}/>
       <Route path='/register' element={<Auth insideRegister={true}/>}/>
-      <Route path='/*' element={Pnf}/>
+      <Route path="*" element={<Pnf />} />
     </Routes>
  
     </>

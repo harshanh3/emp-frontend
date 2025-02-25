@@ -1,5 +1,4 @@
 
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { editEmpDetailsAPI, allempdetailsAPI } from "../services/allAPI";
@@ -44,14 +43,77 @@ const EditEmployee = () => {
     setEmployee({ ...employee, [e.target.name]: e.target.value });
   };
 
+
+
+  // const handleImageChange = async (e) => {
+  //   const file = e.target.files[0];
+  
+  //   if (file) {
+  //     setSelectedImage(URL.createObjectURL(file)); 
+  
+  //     const data = new FormData();
+  //     data.append("file", file);
+  //     data.append("upload_preset", "employee_records"); 
+  //     data.append("cloud_name", "dxaigyhys"); 
+  
+  //     try {
+  //       const response = await fetch(
+  //         "https://api.cloudinary.com/v1_1/dxaigyhys/image/upload",
+  //         {
+  //           method: "POST",
+  //           body: data,
+  //         }
+  //       );
+  
+  //       const result = await response.json();
+  //       console.log("Cloudinary Response:", result);
+  
+  //       if (result.secure_url) {
+  //         setEmployee((prev) => ({ ...prev, empImg: result.secure_url }));
+  //       } else {
+  //         console.error("Failed to upload image to Cloudinary");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error uploading to Cloudinary:", error);
+  //     }
+  //   }
+  // };
+  
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const token = sessionStorage.getItem("token");
+  
+  //   if (token) {
+  //     const reqHeader = { Authorization: `Bearer ${token}` };
+  //     const formData = new FormData();
+  
+  //     formData.append("name", employee.name);
+  //     formData.append("postion", employee.postion);
+  //     formData.append("department", employee.department);
+  //     formData.append("salary", employee.salary);
+      
+     
+  //     if (employee.empImg) {
+  //       formData.append("empImg", employee.empImg);
+  //     }
+  
+  //     try {
+  //       await editEmpDetailsAPI(id, formData, reqHeader);
+  //       alert("Employee updated successfully!");
+  //       navigate("/dashboard");
+  //     } catch (err) {
+  //       console.error("Error updating employee:", err);
+  //     }
+  //   }
+  // };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedImage(URL.createObjectURL(file)); // Preview image
-      setEmployee({ ...employee, empImg: file }); // Store file
+      setSelectedImage(URL.createObjectURL(file));
+      setEmployee({ ...employee, empImg: file }); 
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = sessionStorage.getItem("token");

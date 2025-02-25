@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { addEmpDetailsAPI } from "../services/allAPI";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const EmployeeForm = () => {
     const Navigate = useNavigate()
@@ -60,13 +61,34 @@ const EmployeeForm = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setEmployeeDetails((prev) => ({ ...prev, empImg: file }));
-      setPreview(URL.createObjectURL(file));
+const handleFileChange = async (event) => {
+  const file = event.target.files[0];
+
+  if (file) {
+    setEmployeeDetails((prev) => ({ ...prev, empImg: file }));
+    setPreview(URL.createObjectURL(file));
+
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "employee records"); 
+
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/dxaigyhys/image/upload",
+        data
+      );
+
+      console.log("Cloudinary Response:", response.data);
+      setEmployeeDetails((prev) => ({
+        ...prev,
+        empImg: response.data.secure_url,
+      }));
+    } catch (err) {
+      console.error("Error uploading image:", err);
     }
-  };
+  }
+};
+
 
   return (
     <div className="p-6">
@@ -114,7 +136,7 @@ const EmployeeForm = () => {
         />
         <input
           onChange={handleFileChange}
-          type="file"
+          type="file" 
           accept="image/png, image/jpg, image/jpeg"
           className="border p-2 w-full"
           required
@@ -129,3 +151,7 @@ const EmployeeForm = () => {
 };
 
 export default EmployeeForm;
+
+
+
+
