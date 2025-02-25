@@ -1,75 +1,97 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginAPI, registerAPI } from '../services/allAPI';
-
+import { tokenAuthContext } from '../contexts/AuthContextAPI';
 
 const Auth = ({ insideRegister }) => {
-  const Navigate = useNavigate()
+  const { isAuthorised, setIsAuthorised } = useContext(tokenAuthContext);
+  const Navigate = useNavigate();
 
-    const [inputData, setInputData] = useState({ username:"", email:"", password:"" });
-    console.log(inputData);
-    
+  const [inputData, setInputData] = useState({ username: "", email: "", password: "" });
+  const [errors, setErrors] = useState({}); // State for validation errors
 
-const handleRegister = async (e)=>{
-    e.preventDefault()
-    console.log("inside handleRegister");
-    if(inputData.username && inputData.email && inputData.password){
-        // alert("make API Call")
-        try{
-          const result = await registerAPI(inputData)
-          console.log(result);
-          if(result.status==200){
-            alert(`welcome please login to explore`)
-            Navigate('/')
-            setInputData({username:"",email:"",password:""})
-          }else{
-            if(result.response.status==406){
-              alert(result.response.data)
-              setInputData({username:"",email:"",password:""})
-            }
-          }
-          
+  // Validation function
+  const validateForm = () => {
+    let errors = {};
+    let isValid = true;
 
-        }catch(err){
-          console.log(err);
-          
-        }
-    }else{
-        alert("please fill the form")
-    }
-    
-}
-
-const handleLogin = async (e)=>{
-  e.preventDefault()
-  if(inputData.email && inputData.password){
-    try{
-      const result = await loginAPI(inputData)
-      if(result.status==200){
-        sessionStorage.setItem("user",JSON.stringify(result.data.user))
-        sessionStorage.setItem("token",result.data.token)
-        setInputData({ username:"", email:"", password:""})
-        Navigate('/dashboard')
-      }else{
-        if(result.response.status==404){
-          alert(result.response.data)
-        }
+    if (insideRegister) {
+      if (!inputData.username.trim()) {
+        errors.username = "Username is required.";
+        isValid = false;
+      } else if (inputData.username.length < 3) {
+        errors.username = "Username must be at least 3 characters.";
+        isValid = false;
       }
-    }catch(err){
-      console.log(err);
-      
     }
-  }else{
-    alert("please fill in the form")
-  }
-}
 
+    if (!inputData.email.trim()) {
+      errors.email = "Email is required.";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(inputData.email)) {
+      errors.email = "Invalid email format.";
+      isValid = false;
+    }
 
-    
+    if (!inputData.password.trim()) {
+      errors.password = "Password is required.";
+      isValid = false;
+    } else if (inputData.password.length < 6) {
+      errors.password = "Password must be at least 6 characters.";
+      isValid = false;
+    }
 
-    return (
-        <>
-              <div className="min-h-screen flex justify-center items-center bg-gray-100">
+    setErrors(errors);
+    return isValid;
+  };
+
+  // Handle Register
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      try {
+        const result = await registerAPI(inputData);
+        if (result.status === 200) {
+          alert("Welcome! Please log in to explore.");
+          Navigate('/');
+          setInputData({ username: "", email: "", password: "" });
+        } else {
+          if (result.response.status === 406) {
+            alert(result.response.data);
+            setInputData({ username: "", email: "", password: "" });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  // Handle Login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      try {
+        const result = await loginAPI(inputData);
+        if (result.status === 200) {
+          sessionStorage.setItem("user", JSON.stringify(result.data.user));
+          sessionStorage.setItem("token", result.data.token);
+          setIsAuthorised(true);
+          setInputData({ username: "", email: "", password: "" });
+          Navigate('/dashboard');
+        } else {
+          if (result.response.status === 404) {
+            alert(result.response.data);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex justify-center items-center bg-gray-100">
       <div className="w-11/12 md:w-3/4 lg:w-2/3">
         <div className="bg-white shadow-lg rounded-lg p-6">
           <div className="grid md:grid-cols-2 items-center gap-6">
@@ -82,6 +104,7 @@ const handleLogin = async (e)=>{
               </h5>
 
               <form className="mt-4">
+                {/* Username field for Register */}
                 {insideRegister && (
                   <div className="mb-3">
                     <label className="block text-gray-700">Username</label>
@@ -92,6 +115,7 @@ const handleLogin = async (e)=>{
                       onChange={e => setInputData({ ...inputData, username: e.target.value })}
                       className="w-full px-4 py-2 border rounded focus:ring focus:ring-blue-300"
                     />
+                    {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                   </div>
                 )}
 
@@ -105,6 +129,7 @@ const handleLogin = async (e)=>{
                     onChange={e => setInputData({ ...inputData, email: e.target.value })}
                     className="w-full px-4 py-2 border rounded focus:ring focus:ring-blue-300"
                   />
+                  {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                 </div>
 
                 {/* Password */}
@@ -117,9 +142,9 @@ const handleLogin = async (e)=>{
                     onChange={e => setInputData({ ...inputData, password: e.target.value })}
                     className="w-full px-4 py-2 border rounded focus:ring focus:ring-blue-300"
                   />
+                  {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                 </div>
 
-                {/* Register/Login Buttons */}
                 {insideRegister ? (
                   <div className="mt-4">
                     <button
@@ -135,12 +160,12 @@ const handleLogin = async (e)=>{
                   </div>
                 ) : (
                   <div className="mt-4">
-                    <button onClick={handleLogin}
+                    <button
+                      onClick={handleLogin}
                       type="button"
                       className="w-full flex justify-center items-center gap-2 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
                     >
                       Login
-                     
                     </button>
                     <p className="mt-2 text-sm text-gray-600">
                       New User? <Link to="/register" className="text-blue-500">Register</Link>
@@ -153,9 +178,7 @@ const handleLogin = async (e)=>{
         </div>
       </div>
     </div>
+  );
+};
 
-        </>
-    )
-}
-
-export default Auth
+export default Auth;

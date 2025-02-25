@@ -23,3 +23,7 @@ export const allempdetailsAPI = async (reqHeader) => {
 export const empRemoveAPI = async (id,reqHeader) => {
     return await commonAPI("DELETE", `${SERVER_URL}/emp/${id}/remove`,{},reqHeader)
 }
+// edit 
+export const editEmpDetailsAPI = async (id, reqBody, reqHeader) => {
+    return await commonAPI("PUT", `${SERVER_URL}/emp/${id}/edit`, reqBody, reqHeader);
+}
